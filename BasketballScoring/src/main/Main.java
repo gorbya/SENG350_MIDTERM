@@ -7,30 +7,55 @@ class Main
     {
     	Scanner in = new Scanner(System.in);
         // create objects for testing
-        AverageScoreDisplay averageScoreDisplay =
-                          new AverageScoreDisplay();
+        PredictedScoreDisplay predictedScoreDisplay =
+                          new PredictedScoreDisplay();
         CurrentScoreDisplay currentScoreDisplay =
                           new CurrentScoreDisplay();
+        
+        FinalScoreDisplay finalScoreDisplay =
+        				  new FinalScoreDisplay();
+        
+        SelectTeams st = new SelectTeams();
+        
+        String[] teams = st.SelectTeams();
+        
         System.out.println("Welcome to the Basketball Score Software!");
-        System.out.println("Who will be playing today?");
-        String teamA = in.nextLine();
-        System.out.println("Wonderful! Who will they be up against?");
-        String teamB = in.nextLine();
-        System.out.println("Alright! Today's match will be " + teamA + " vs " + teamB + "!");
+
+        System.out.println("\nToday's match will be " + teams[0] + " vs " + teams[1] + "!");
         // pass the displays to Cricket data
-        BasketballData basketballData = new BasketballData(teamA,teamB);
+        BasketballData basketballData = new BasketballData(teams[0],teams[1]);
   
         // register display elements
-        basketballData.registerObserver(averageScoreDisplay);
+        
         basketballData.registerObserver(currentScoreDisplay);
   
         // in real app you would have some logic to
         // call this function when data changes
         basketballData.dataChanged();
-  
+        
+        System.out.println("\nEnd of the First Quarter, press return to continue.");
+        in.nextLine();
+        basketballData.registerObserver(predictedScoreDisplay);
+        basketballData.dataChanged();
+        
+        basketballData.unregisterObserver(predictedScoreDisplay);
+        
+        System.out.println("\nEnd of the Second Quarter, press return to continue.");
+        in.nextLine();
+        
+        basketballData.dataChanged();
+        System.out.println("\nEnd of the Third Quarter, press return to continue.");
+        in.nextLine();
+        basketballData.registerObserver(predictedScoreDisplay);
+        basketballData.registerObserver(finalScoreDisplay);
+        
+        basketballData.dataChanged();
+        
+        System.out.println("\nEnd of the Fourth Quarter");
+        
         //remove an observer
-        basketballData.unregisterObserver(averageScoreDisplay);
-  
+        //basketballData.unregisterObserver(averageScoreDisplay);
+        
         // now only currentScoreDisplay gets the
         // notification
         //basketballData.dataChanged();
