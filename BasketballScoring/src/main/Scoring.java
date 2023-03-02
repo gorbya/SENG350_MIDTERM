@@ -12,14 +12,15 @@ package main;
 	    public void unregisterObserver(Observer o);
 	    public void notifyObservers();
 	}
-	  
+
 	class BasketballData implements Subject
 	{
-		String teamA;
-		String teamB;
+		public String teamA;
+		public String teamB;
 	    int pointsA;
 	    int pointsB;
-	    int fouls;
+	    int foulsA;
+	    int foulsB;
 	    ArrayList<Observer> observerList;
 	  
 	    public BasketballData(String tA, String tB) {
@@ -46,7 +47,7 @@ package main;
 	              observerList.iterator(); it.hasNext();)
 	        {
 	            Observer o = it.next();
-	            o.update(pointsA,fouls);
+	            o.update(pointsA, pointsB, foulsA, foulsB);
 	            //Add BPoints
 	        }
 	    }
@@ -54,11 +55,11 @@ package main;
 	    // get latest points from stadium
 	    private int getLatestScore()
 	    {
-	        // return 90 for simplicity
+	        //TODO: Make this random?
 	        return 18;
 	    }
 	  
-	    // get latest fouls from stadium
+	   		//TODO: Ditto
 	    private int getLatestFoulCount()
 	    {
 	        // return 2 for simplicity
@@ -73,7 +74,9 @@ package main;
 	    {
 	        //get latest data
 	        pointsA = getLatestScore();
-	        fouls = getLatestFoulCount();
+	        foulsA = getLatestFoulCount();
+	        pointsB = getLatestScore();
+	        foulsB = getLatestFoulCount();
 	  
 	        notifyObservers();
 	    }
@@ -84,46 +87,53 @@ package main;
 	// is an update from CricketData
 	interface Observer
 	{
-	    public void update(int points, int fouls);
+	    public void update(int pointsA, int pointsB, int foulsA, int foulsB);
 	}
 	  
 	class AverageScoreDisplay implements Observer
 	{
 	    
-	    private int predictedScore;
-	  
-	    public void update(int points, int fouls)
+	    private int predictedScoreA;
+	    private int predictedScoreB;
+	    
+	    public void update(int pointsA, int pointsB, int foulsA, int foulsB)
 	    {
 	        //the predicted score estimates 23 more points minus 2 per foul.
 	    	
-	    	int predictedMissedPoints = (23-2*fouls);
+	    	int predictedMissedPointsA = (23-2*foulsA);
+	    	int predictedMissedPointsB = (23-2*foulsB);
 	    	
-	    	if (predictedMissedPoints < 0){
-	    		predictedMissedPoints = 0;
+	    	if (predictedMissedPointsA < 0){
+	    		predictedMissedPointsA = 0;
 	    	}
 	    	
-	        this.predictedScore = (points + predictedMissedPoints);
+	    	if (predictedMissedPointsB < 0){
+	    		predictedMissedPointsB = 0;
+	    	}
+	    	
+	        this.predictedScoreA = (pointsA + predictedMissedPointsA);
+	        this.predictedScoreB = (pointsB + predictedMissedPointsB);
 	        display();
 	    }
 	  
 	    public void display()
 	    {
-	        System.out.println("\nAverage Score Display: \n"
-	                           + "Run Rate: " + "___" +
-	                           "\nPredictedScore: " +
-	                           predictedScore);
+	        System.out.println("\nPredictedFinalScore: " +
+	                           predictedScoreA +" | "+predictedScoreB);
 	    }
 	}
 	  
 	class CurrentScoreDisplay implements Observer
 	{
-	    private int points, fouls;
+	    private int pointsA, pointsB, foulsA, foulsB;
 	    
 	  
-	    public void update(int points, int fouls)
+	    public void update(int pointsA, int pointsB, int foulsA, int foulsB)
 	    {
-	        this.points = points;
-	        this.fouls = fouls;
+	        this.pointsA = pointsA;
+	        this.foulsA = foulsA;
+	        this.pointsB = pointsB;
+	        this.foulsB = foulsB;
 	        
 	        display();
 	    }
@@ -131,9 +141,10 @@ package main;
 	    public void display()
 	    {
 	        System.out.println("\nCurrent Score Display:\n"
-	                           + "Points: " + points +
-	                           "\nFouls: " + fouls +
-	                           "\nOvers: " + "___" );
+	                           +"TeamA Points: " + pointsA +
+	                           "\nTeamA Fouls: " + foulsA +
+	                           "\nTeamB Points: " + pointsB +
+	                           "\nTeamB Fouls: " + foulsB);
 	    }
 	}
 
